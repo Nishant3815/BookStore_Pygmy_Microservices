@@ -1,8 +1,17 @@
 version: '3.2'
 services:
-  flask:
+  frontend:
     build: ./frontend
     container_name: frontend
     restart: always
     ports:
       - 8080:8080
+  sqlite:
+    build: ./sqlite
+    container_name: sqlite
+    restart: always
+    command: tail -F /dev/null
+    volumes:
+      - ./sqlite:/db
+    environment:
+      - SQLITE_DB_NAME=bookstore.db
