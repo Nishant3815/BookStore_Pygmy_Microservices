@@ -1,0 +1,8 @@
+version: '3.2'
+services:
+  flask:
+    build: ./frontend
+    container_name: frontend
+    restart: always
+    ports:
+      - 8080:8080
