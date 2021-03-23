@@ -5,12 +5,23 @@ services:
     container_name: frontend
     restart: always
     ports:
-      - 8080:8080
+      - 8000:8080
+  catalog:
+    build: ./catalog
+    container_name: catalog
+    restart: always
+    ports:
+      - 8001:8080
+  order:
+    build: ./order
+    container_name: order
+    restart: always
+    ports:
+      - 8002:8080
   sqlite:
     build: ./sqlite
     container_name: sqlite
     restart: always
-    command: tail -F /dev/null
     volumes:
       - ./sqlite:/db
     environment:
