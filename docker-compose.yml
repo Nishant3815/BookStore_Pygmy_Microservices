@@ -12,6 +12,16 @@ services:
     restart: always
     ports:
       - 8001:8080
+    environment:
+      - 'INITIAL_CATALOG=[
+          {"title": "How to get a good grade in 677 in 20 minutes a day", "topic": "Distributed Systems", "cost": 200, "stock": 200},
+          {"title": "RPCs for Dummies", "topic": "Distributed Systems", "cost": 200, "stock": 200},
+          {"title": "Xen and the Art of Surviving Graduate School", "topic": "Graduate School", "cost": 200, "stock": 200},
+          {"title": "Cooking for the Impatient Graduate Student", "topic": "Graduate School", "cost": 200, "stock": 200} 
+        ]'
+      - SQLITE_DB_NAME=bookstore.db
+    volumes:
+      - ./sqlite:/db
   order:
     build: ./order
     container_name: order

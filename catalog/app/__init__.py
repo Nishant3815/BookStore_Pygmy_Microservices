@@ -1,4 +1,5 @@
-from flask import Flask
+import sqlite3
+from flask import g, Flask
 from config import Config
 from logging.config import dictConfig
 
@@ -28,5 +29,32 @@ LOGGING_CONFIG = {
     }
 }
 dictConfig(LOGGING_CONFIG)
+
+DATABASE = '/db/' + app.config['SQLITE_DB_NAME']
+
+def connect_db():
+    return sqlite3.connect(DATABASE)
+
+def init_db():
+    g.db = connect_db()
+    with app.open_resource('/db/schema.sql', mode='r') as f:
+        app.logger.info("Initializing database")
+        g.db.cursor().executescript(f.read())
+    g.db.commit()
+    if hasattr(g, 'db'):
+        g.db.close()
+
+with app.app_context():
+    init_db()
+
+@app.before_request
+def before_request():
+    g.db = connect_db()
+    
+@app.teardown_request
+def teardown_request(exception):
+    if hasattr(g, 'db'):
+        g.db.close()
+
 
 from app import views
