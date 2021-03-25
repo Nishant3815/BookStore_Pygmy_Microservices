@@ -1,0 +1,5 @@
+2021-03-25 21:34:19,829 [INFO] file: create table books(id INTEGER PRIMARY KEY, name TEXT, topic TEXT, cost INTEGER, stock INTEGER);
+2021-03-25 21:34:19,830 [INFO] file: insert into books(name, topic, cost, stock) values("How to get a good grade in 677 in 20 minutes a day", "Distributed Systems", 200, 200);
+2021-03-25 21:34:19,831 [INFO] file: insert into books(name, topic, cost, stock) values("RPCs for Dummies", "Distributed Systems", 200, 200);
+2021-03-25 21:34:19,831 [INFO] file: insert into books(name, topic, cost, stock) values("Xen and the Art of Surviving Graduate School", "Graduate School", 200, 200);
+2021-03-25 21:34:19,832 [INFO] file: insert into books(name, topic, cost, stock) values("Cooking for the Impatient Graduate Student", "Graduate School", 200, 200);

@@ -25,7 +25,7 @@ LOGGING_CONFIG = {
             'level': app.config['LOG_LEVEL'],
             'formatter': 'standard',
             'class': 'logging.FileHandler',
-            'filename': '/db/' + app.config['SQLITE_DB_NAME'] + '.log'
+            'filename': '/logs/' + app.config['DB_QUERY_LOG']
         }
     },
     'loggers': {
