@@ -18,3 +18,4 @@ def backend_healthcheck() -> bool:
     except ConnectionError as err:
         app.logger.error(err)
         return False
+        
