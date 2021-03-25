@@ -14,6 +14,7 @@ def db_healthcheck() -> bool:
 
     try:
         result = query_db("Select 1")
+        app.logfile.info("Select 1")
         return True
     except ConnectionError as err:
         app.logger.error(err)
