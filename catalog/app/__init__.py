@@ -1,4 +1,5 @@
-import sqlite3
+import sqlite3, logging
+from logging import DEBUG
 from flask import g, Flask
 from config import Config
 from logging.config import dictConfig
@@ -14,21 +15,37 @@ LOGGING_CONFIG = {
         },
     },
     'handlers': { 
-        'default': { 
+        'console': { 
             'level': app.config['LOG_LEVEL'],
             'formatter': 'standard',
             'class': 'logging.StreamHandler',
             'stream': 'ext://sys.stdout'
         },
+        'file': {
+            'level': app.config['LOG_LEVEL'],
+            'formatter': 'standard',
+            'class': 'logging.FileHandler',
+            'filename': '/db/' + app.config['SQLITE_DB_NAME'] + '.log'
+        }
     },
-    'loggers': { 
-        '': {
-            'handlers': ['default'],
+    'loggers': {
+        'root': {
+            'handlers': ['console', 'file'],
+            'level': app.config['LOG_LEVEL']           
+        },
+        'console': {
+            'handlers': ['console'],
+            'level': app.config['LOG_LEVEL']
+        },
+        'file': {
+            'handlers': ['file'],
             'level': app.config['LOG_LEVEL']
         }
     }
 }
 dictConfig(LOGGING_CONFIG)
+app.logfile    = logging.getLogger('file')
+app.logconsole = logging.getLogger('console')
 
 DATABASE = '/db/' + app.config['SQLITE_DB_NAME']
 
@@ -38,7 +55,9 @@ def connect_db():
 def init_db():
     g.db = connect_db()
     with app.open_resource('/db/schema.sql', mode='r') as f:
-        app.logger.info("Initializing database")
+        app.logconsole.info("Initializing database")
+        for line in f:
+            app.logfile.info(line.strip())
         g.db.cursor().executescript(f.read())
     g.db.commit()
     if hasattr(g, 'db'):
