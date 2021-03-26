@@ -1,5 +1,5 @@
 from app import app
-from flask import jsonify
+from flask import request, jsonify
 from app.utils import db_healthcheck, query_db
 import time
 
@@ -18,19 +18,19 @@ def health_check():
 def make_lookup_db():
     
     start_time = time.time()
-    topic = requests.args.get('topic',type='str')
-    book_id = requests.args.get('id',type='int')
+    topic = request.args.get('topic',type=str)
+    book_id = request.args.get('id',type=int)
     if topic:
-        print("Searching for the given topic.....")
-        books = query_db('select name,id from books where topic='+str(topic))
-        app.logfile.info('select name,id from books where topic='+str(topic))
+        app.logger.info("Searching for the given topic....." + topic)
+        books = query_db('select id,name from books where topic="'+str(topic) + '"')
+        #app.logger('select id,name from books where topic='+str(topic))
         print("Logged query related to the topic")
         return jsonify(books)
     
     elif (book_id):
         print("Searching for the given id....")
         book_data = query_db('select * from books where id='+str(book_id))
-        app.logfile.info('select * from books where topic='+str(book_id))
+        #app.logfile.info('select * from books where topic='+str(book_id))
         print("Logged query related to id of the book")
         return jsonify(book_data)
     else:
@@ -46,21 +46,15 @@ def update_stock():
     ###### Making Updates to the stocks######
     # Update the query in the database below
     stock_count = query_db('select stock from books where id='+str(id_book))
-    app.logfile.info('select stock from books where id='+str(id_book))
-    upd_stock_count = stock_count-delta
+    #app.logfile.info('select stock from books where id='+str(id_book))
+    upd_stock_count = stock_count - 1
     # Make changes to the database below
     upd = query_db('update books set stock='+str(upd_stock_count)+'where id='+str(id_book))
-    app.logfile.info('update books set stock='+str(upd_stock_count)+'where id='+str(id_book))
+    #app.logfile.info('update books set stock='+str(upd_stock_count)+'where id='+str(id_book))
     
     ###### Making Updates to the cost of items######
-    upd_cost = query_db('update books set cost='+str(cost_updated)+'where id='+str(id_book))
-    app.logfile.info('update books set cost='+str(cost_updated)+'where id='+str(id_book))
+    #upd_cost = query_db('update books set cost='+str(cost_updated)+'where id='+str(id_book))
+    #app.logfile.info('update books set cost='+str(cost_updated)+'where id='+str(id_book))
     ################################################
     
-    # Not sure what should be returned..these are update operations only 
-    return ("Updated the Pygmy Store database")
-
-
-       
-    
-    
+    return(jsonify({'buy': True})), 200 

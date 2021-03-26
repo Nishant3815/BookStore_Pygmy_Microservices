@@ -1,6 +1,6 @@
 from app import app
-from flask import jsonify
-import time
+from flask import request, jsonify
+import time, json
 
 
 @app.route('/health', methods=['GET'])
@@ -13,8 +13,11 @@ def health_check():
 
 @app.route('/purchase',methods=['POST'])
 def make_purchase():
-    start_time = time.time()
-    book_id = request.args.get('id',type=int)
+    #start_time = time.time()
+    print(request)
+    data = request.json
+    book_id = data['id']
+    app.logger.info("Got request to buy book " + str(book_id))
     req = requests.get("http://catalog:8080/querydb?id="+str(id_book))
     print(req) #See the output structure and modify the loop below
     if (req['books'][0]['stock']>0):
@@ -24,8 +27,8 @@ def make_purchase():
         upd_req = requests.post(update_url, json.dumps(payload))
         if upd_req.status_code==200:
             print("Purchase successful and updated the stocks successfully")
-    end_time = time.time()
-    return ("Purchased"+req['books'][0]['name'])
+    #end_time = time.time()
+        return ("Purchased"+req['books'][0]['name'])
     else:
         print("Item Sold Out")
     
