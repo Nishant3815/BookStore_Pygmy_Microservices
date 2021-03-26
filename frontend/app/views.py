@@ -21,10 +21,10 @@ def search():
     if (topic):
         print("Searching for the given topic from the database...")
         start_time = time.time()
-        req = requests.get("http://catalog:8080/querydb?topic="+str(topic))
+        response = requests.get("http://catalog:8080/querydb?topic="+str(topic))
         end_time  = time.time()
-        
-    return (jsonify(req.text)), 200 
+        app.logger.info(response.json())
+        return (str(response.json())), 200 
 
 @app.route('/lookup',methods=['GET'])
 def lookup():
@@ -32,10 +32,10 @@ def lookup():
     if id_book:
         print("Searching for the given id from the database...")
         start_time = time.time()
-        req = requests.get("http://catalog:8080/querydb?id="+str(id_book))
+        response = requests.get("http://catalog:8080/querydb?id="+str(id_book))
         end_time = time.time()
-    
-    return (jsonify(req.text)), 200
+        app.logger.info(response.json())
+        return (str(response.json())), 200
 
 @app.route('/buy',methods=['POST'])
 def buy():

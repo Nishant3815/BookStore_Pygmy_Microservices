@@ -1,6 +1,6 @@
 from app import app
 from flask import request, jsonify
-from app.utils import db_healthcheck, query_db
+from app.utils import db_healthcheck, query_db, update_db
 import time
 
 @app.route('/health', methods=['GET'])
@@ -49,12 +49,11 @@ def update_stock():
     app.logfile.info('select stock from books where id='+str(book_id))
     updated_stock_count = stock_query[0]['stock'] - 1
     # Make changes to the database below
-    update_query = query_db('update books set stock='+str(updated_stock_count)+' where id='+str(book_id))
+    update_query = update_db('update books set stock='+str(updated_stock_count)+' where id='+str(book_id))
     app.logfile.info('update books set stock='+str(updated_stock_count)+' where id='+str(book_id))
-    app.logconsole.info(update_query)
     ###### Making Updates to the cost of items######
     #upd_cost = query_db('update books set cost='+str(cost_updated)+'where id='+str(id_book))
     #app.logfile.info('update books set cost='+str(cost_updated)+'where id='+str(id_book))
     ################################################
     
-    return(jsonify({'buy': True})), 200 
+    return(jsonify({'buy': update_query})), 200

@@ -1,5 +1,4 @@
 import sqlite3, logging
-from logging import DEBUG
 from flask import g, Flask
 from config import Config
 from logging.config import dictConfig
@@ -57,8 +56,8 @@ def init_db():
     with app.open_resource('/db/schema.sql', mode='r') as f:
         app.logconsole.info("Initializing database")
         for line in f:
+            g.db.cursor().executescript(line.strip())
             app.logfile.info(line.strip())
-        g.db.cursor().executescript(f.read())
     g.db.commit()
     if hasattr(g, 'db'):
         g.db.close()

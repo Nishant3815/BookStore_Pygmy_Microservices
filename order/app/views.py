@@ -25,7 +25,7 @@ def make_purchase():
         if upd_req.status_code==200:
            app.logconsole.info("Purchase successful and updated the stocks successfully")
         end_time = time.time()
-        return(jsonify({"success": True})), 200
+        return(upd_req.json()), 200
     else:
         return(jsonify({"error": "Item no longer in stock"})), 200
     
