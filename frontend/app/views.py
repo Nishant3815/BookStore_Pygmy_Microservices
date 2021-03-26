@@ -1,7 +1,7 @@
 from app import app
-from flask import jsonify
+from flask import request, jsonify
 from app.utils import backend_healthcheck
-import time 
+import time, requests, json 
 
 @app.route('/health', methods=['GET'])
 def health_check():
@@ -17,39 +17,38 @@ def health_check():
 
 @app.route('/search',methods=['GET'])
 def search():
-    retrieve_topic = request.args.get('topic',type=str)
+    topic = request.args.get('topic',type=str)
     if (topic):
         print("Searching for the given topic from the database...")
         start_time = time.time()
-        ## Update database query line here, to be written in utils
+        req = requests.get("http://catalog:8080/querydb?topic="+str(topic))
         end_time  = time.time()
         
-    return None #Jsonified item after database query
+    return (jsonify(req.text)), 200 
 
 @app.route('/lookup',methods=['GET'])
 def lookup():
-    id_book = request.args.get('id',type='int')
+    id_book = request.args.get('id',type=int)
     if id_book:
         print("Searching for the given id from the database...")
         start_time = time.time()
-        ## Update database query line here, to be written in utils
+        req = requests.get("http://catalog:8080/querydb?id="+str(id_book))
         end_time = time.time()
     
-    return None #Jsonified item after database query
+    return (jsonify(req.text)), 200
 
-@app.route('/buy',methods=['GET'])
+@app.route('/buy',methods=['POST'])
 def buy():
-    id_book = request.args.get('id',type='int')
-    if id_book:
+    data = request.json
+    book_id = data['id']
+    app.logger.info("Got request to buy book " + str(book_id))
+    if book_id:
         print("Initiating a buy request for the given item")
         start_time = time.time()
         ## Update request to order microservice line here, functioonality in order to be updated 
-        req = requests.get("http://order:8080/purchase")
+        update_url = 'http://order:8080/purchase'
+        payload = "{'id': book_id}"
+        app.logger.info(json.dumps(payload))
+        req = requests.post(update_url, json.dumps(payload)) 
         end_time = time.time()
-        return (jsonify(req.text)), 200
-
-        
-        
-    
-        
-    
+        return (req.status_code), 200    
