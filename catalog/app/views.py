@@ -23,14 +23,14 @@ def make_lookup_db():
     if topic:
         app.logger.info("Searching for the given topic....." + topic)
         books = query_db('select id,name from books where topic="'+str(topic) + '"')
-        #app.logger('select id,name from books where topic='+str(topic))
+        app.logfile.info('select id,name from books where topic='+str(topic))
         print("Logged query related to the topic")
         return jsonify(books)
     
     elif (book_id):
         print("Searching for the given id....")
         book_data = query_db('select * from books where id='+str(book_id))
-        #app.logfile.info('select * from books where topic='+str(book_id))
+        app.logfile.info('select * from books where topic='+str(book_id))
         print("Logged query related to id of the book")
         return jsonify(book_data)
     else:
@@ -39,19 +39,19 @@ def make_lookup_db():
 @app.route('/updatedb',methods=['POST'])
 def update_stock():
     start_time = time.time()
-    id_book = requests.json['id']
+    book_id = request.json['id']
     #delta   = requests.json.get('delta')
     #cost_updated    = requests.json.get('cost_updated')
     
     ###### Making Updates to the stocks######
     # Update the query in the database below
-    stock_count = query_db('select stock from books where id='+str(id_book))
-    #app.logfile.info('select stock from books where id='+str(id_book))
-    upd_stock_count = stock_count - 1
+    stock_query = query_db('select stock from books where id='+str(book_id))
+    app.logfile.info('select stock from books where id='+str(book_id))
+    updated_stock_count = stock_query[0]['stock'] - 1
     # Make changes to the database below
-    upd = query_db('update books set stock='+str(upd_stock_count)+'where id='+str(id_book))
-    #app.logfile.info('update books set stock='+str(upd_stock_count)+'where id='+str(id_book))
-    
+    update_query = query_db('update books set stock='+str(updated_stock_count)+' where id='+str(book_id))
+    app.logfile.info('update books set stock='+str(updated_stock_count)+' where id='+str(book_id))
+    app.logconsole.info(update_query)
     ###### Making Updates to the cost of items######
     #upd_cost = query_db('update books set cost='+str(cost_updated)+'where id='+str(id_book))
     #app.logfile.info('update books set cost='+str(cost_updated)+'where id='+str(id_book))

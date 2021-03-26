@@ -6,6 +6,9 @@ services:
     restart: always
     ports:
       - 8000:8080
+    depends_on:
+      - catalog
+      - order
   catalog:
     build: ./catalog
     container_name: catalog
@@ -18,6 +21,8 @@ services:
     volumes:
       - ./sqlite:/db
       - ./logs:/logs
+    depends_on:
+      - sqlite
   order:
     build: ./order
     container_name: order
@@ -28,6 +33,8 @@ services:
       - DB_QUERY_LOG=order.log
     volumes:
       - ./logs:/logs
+    depends_on:
+      - catalog
   sqlite:
     build: ./sqlite
     container_name: sqlite

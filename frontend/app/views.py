@@ -47,8 +47,7 @@ def buy():
         start_time = time.time()
         ## Update request to order microservice line here, functioonality in order to be updated 
         update_url = 'http://order:8080/purchase'
-        payload = "{'id': book_id}"
-        app.logger.info(json.dumps(payload))
-        req = requests.post(update_url, json.dumps(payload)) 
+        payload = {'id': book_id}
+        response = requests.post(update_url, json=payload) 
         end_time = time.time()
-        return (req.status_code), 200    
+        return (response.json()), 200
