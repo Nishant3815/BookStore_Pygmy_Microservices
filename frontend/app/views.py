@@ -1,14 +1,9 @@
 from app import app
 from flask import request, jsonify
-from app.utils import backend_healthcheck
-import time, requests, json 
+from app.utils import backend_healthcheck, search_topic, search_product 
 
 @app.route('/health', methods=['GET'])
 def health_check():
-    """
-    Route to do check health of application
-    """
-
     response = backend_healthcheck()
     if response:
         return(jsonify({'healthy': True})), 200
@@ -19,35 +14,35 @@ def health_check():
 def search():
     topic = request.args.get('topic',type=str)
     if (topic):
-        print("Searching for the given topic from the database...")
-        start_time = time.time()
-        response = requests.get("http://catalog:8080/querydb?topic="+str(topic))
-        end_time  = time.time()
-        app.logger.info(response.json())
-        return (str(response.json())), 200 
+        result = search_topic(topic)
+        if result:
+            return result, 200
+        else:
+            return 503
+    else:
+        return(jsonify({'error': 'API Usage is /search?topic=<search topic>'})), 400
 
 @app.route('/lookup',methods=['GET'])
 def lookup():
-    id_book = request.args.get('id',type=int)
-    if id_book:
-        print("Searching for the given id from the database...")
-        start_time = time.time()
-        response = requests.get("http://catalog:8080/querydb?id="+str(id_book))
-        end_time = time.time()
-        app.logger.info(response.json())
-        return (str(response.json())), 200
+    book_id = request.args.get('id',type=int)
+    if book_id:
+        result = search_product(book_id)
+        if result:
+            return result, 200
+        else:
+            return 503
+    else:
+        return(jsonify({'error': 'API Usage is /lookup?id=<book id>'})), 400
 
 @app.route('/buy',methods=['POST'])
 def buy():
     data = request.json
-    book_id = data['id']
-    app.logger.info("Got request to buy book " + str(book_id))
-    if book_id:
-        print("Initiating a buy request for the given item")
-        start_time = time.time()
-        ## Update request to order microservice line here, functioonality in order to be updated 
-        update_url = 'http://order:8080/purchase'
-        payload = {'id': book_id}
-        response = requests.post(update_url, json=payload) 
-        end_time = time.time()
-        return (response.json()), 200
+    if id in data:
+        book_id = data['id']
+        result = search_product(book_id)
+        if result:
+            return result, 200
+        else:
+            return 503
+    else:
+        return(jsonify({'error': 'API Usage is /buy with payload {"id": 1}'})), 400

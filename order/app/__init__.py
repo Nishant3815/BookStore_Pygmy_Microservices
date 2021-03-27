@@ -1,5 +1,4 @@
 import logging
-from logging import DEBUG
 from flask import Flask
 from config import Config
 from logging.config import dictConfig

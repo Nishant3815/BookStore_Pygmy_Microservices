@@ -1,3 +1,4 @@
+import logging
 from flask import Flask
 from config import Config
 from logging.config import dictConfig
@@ -13,20 +14,25 @@ LOGGING_CONFIG = {
         },
     },
     'handlers': { 
-        'default': { 
+        'console': { 
             'level': app.config['LOG_LEVEL'],
             'formatter': 'standard',
             'class': 'logging.StreamHandler',
             'stream': 'ext://sys.stdout'
-        },
+        }
     },
-    'loggers': { 
-        '': {
-            'handlers': ['default'],
+    'loggers': {
+        'root': {
+            'handlers': ['console'],
+            'level': app.config['LOG_LEVEL']           
+        },
+        'console': {
+            'handlers': ['console'],
             'level': app.config['LOG_LEVEL']
         }
     }
 }
 dictConfig(LOGGING_CONFIG)
+app.logconsole = logging.getLogger('console')
 
 from app import views
