@@ -27,6 +27,6 @@ def make_purchase():
         end_time = time.time()
         return(upd_req.json()), 200
     else:
-        return(jsonify({"error": "Item no longer in stock"})), 200
+        return(jsonify({"buy": False, "error": "Item no longer in stock"})), 200
     
     

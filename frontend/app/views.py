@@ -1,6 +1,6 @@
 from app import app
 from flask import request, jsonify
-from app.utils import backend_healthcheck, search_topic, search_product 
+from app.utils import backend_healthcheck, search_topic, search_product, buy_product
 
 @app.route('/health', methods=['GET'])
 def health_check():
@@ -37,9 +37,9 @@ def lookup():
 @app.route('/buy',methods=['POST'])
 def buy():
     data = request.json
-    if id in data:
+    if 'id' in data:
         book_id = data['id']
-        result = search_product(book_id)
+        result = buy_product(book_id)
         if result:
             return result, 200
         else:
