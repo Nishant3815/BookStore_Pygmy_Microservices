@@ -1,7 +1,6 @@
 from app import app
 from flask import request, jsonify
-from app.utils import db_healthcheck, query_db, update_db
-import time
+from app.utils import db_healthcheck, query_product_details, update_product_details
 
 @app.route('/health', methods=['GET'])
 def health_check():
@@ -14,46 +13,32 @@ def health_check():
     else:
         return(jsonify({'healthy': False})), 500
 
-@app.route('/querydb',methods=['GET'])
-def make_lookup_db():
-    
-    start_time = time.time()
+@app.route('/query',methods=['GET'])
+def query():
     topic = request.args.get('topic',type=str)
     book_id = request.args.get('id',type=int)
-    if topic:
-        app.logger.info("Searching for the given topic....." + topic)
-        books = query_db('select id,name from books where topic="'+str(topic) + '"')
-        app.logfile.info('select id,name from books where topic='+str(topic))
-        print("Logged query related to the topic")
-        return jsonify(books)
-    
-    elif (book_id):
-        print("Searching for the given id....")
-        book_data = query_db('select * from books where id='+str(book_id))
-        app.logfile.info('select * from books where topic='+str(book_id))
-        print("Logged query related to id of the book")
-        return jsonify(book_data)
-    else:
-        print("Topic/ID not found. Please consider modifying your search query")
 
-@app.route('/updatedb',methods=['POST'])
-def update_stock():
-    start_time = time.time()
-    book_id = request.json['id']
-    #delta   = requests.json.get('delta')
-    #cost_updated    = requests.json.get('cost_updated')
+    if topic:
+        result = query_product_details(topic, "search")
+    elif book_id:
+        result = query_product_details(book_id, "lookup")
+    else:
+        return(jsonify({'error': 'API Usage is /query?id|topic=<book id|topic>'})), 400
     
-    ###### Making Updates to the stocks######
-    # Update the query in the database below
-    stock_query = query_db('select stock from books where id='+str(book_id))
-    app.logfile.info('select stock from books where id='+str(book_id))
-    updated_stock_count = stock_query[0]['stock'] - 1
-    # Make changes to the database below
-    update_query = update_db('update books set stock='+str(updated_stock_count)+' where id='+str(book_id))
-    app.logfile.info('update books set stock='+str(updated_stock_count)+' where id='+str(book_id))
-    ###### Making Updates to the cost of items######
-    #upd_cost = query_db('update books set cost='+str(cost_updated)+'where id='+str(id_book))
-    #app.logfile.info('update books set cost='+str(cost_updated)+'where id='+str(id_book))
-    ################################################
-    
-    return(jsonify({'buy': update_query})), 200
+    if result:
+        return result, 200
+    else:
+        return 503
+
+@app.route('/update',methods=['POST'])
+def update():
+    data = request.json
+    if 'id' in data:
+        book_id = data['id']
+        result = update_product_details(book_id)
+        if result:
+            return result, 200
+        else:
+            return 503
+    else:
+        return(jsonify({'error': 'API Usage is /buy with payload {"id": 1}'})), 400
