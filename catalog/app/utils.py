@@ -50,7 +50,7 @@ def query_product_details(query_key, query_type):
         app.logfile.info('select * from books where id=' + str(query_key))
         return jsonify(product)
 
-def update_product_details(book_id):
+def update_product_details(book_id, stock_delta, updated_cost):
     """
     Updates data for a product
     ---
@@ -64,14 +64,23 @@ def update_product_details(book_id):
             description: Status of the operation
     """
 
-    curr_stock_details = query_db('select stock from books where id='+str(book_id))
-    app.logfile.info('select stock from books where id='+str(book_id))
-    updated_stock_count = curr_stock_details[0]['stock'] - 1
+    response = {}
 
-    update_stock_details = update_db('update books set stock='+str(updated_stock_count)+' where id='+str(book_id))
-    app.logfile.info('update books set stock='+str(updated_stock_count)+' where id='+str(book_id))
+    if stock_delta and stock_delta != 0:
+        curr_stock_details = query_db('select stock from books where id='+str(book_id))
+        app.logfile.info('select stock from books where id='+str(book_id))
 
-    return(jsonify({'buy': update_stock_details}))
+        updated_stock_count = curr_stock_details[0]['stock'] + stock_delta
+        update_stock_details = update_db('update books set stock='+str(updated_stock_count)+' where id='+str(book_id))
+        app.logfile.info('update books set stock='+str(updated_stock_count)+' where id='+str(book_id))
+        response['stock_updated'] = update_stock_details
+
+    if updated_cost:
+        update_cost_details = update_db('update books set cost='+str(updated_cost)+' where id='+str(book_id))
+        app.logfile.info('update books set stock='+str(updated_cost)+' where id='+str(book_id))
+        response['cost_updated'] = update_cost_details
+
+    return(jsonify(response))
 
 def query_db(query, args=(), one=False):
     """

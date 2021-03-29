@@ -34,11 +34,16 @@ def query():
 def update():
     data = request.json
     if 'id' in data:
+        stock_delta = updated_cost = None
         book_id = data['id']
-        result = update_product_details(book_id)
+        if 'stock_delta' in data:
+            stock_delta = data['stock_delta']
+        if 'cost' in data:
+            updated_cost = data['cost']
+        result = update_product_details(book_id, stock_delta, updated_cost)
         if result:
             return result, 200
         else:
             return 503
     else:
-        return(jsonify({'error': 'API Usage is /buy with payload {"id": 1}'})), 400
+        return(jsonify({'error': 'API Usage is /update with payload {"id": 1}'})), 400

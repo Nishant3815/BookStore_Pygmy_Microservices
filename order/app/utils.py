@@ -27,11 +27,15 @@ def purchase_product(book_id):
 
         if (data[0]['stock'] > 0):
             update_url = 'http://catalog:8080/update'
-            payload = {'id': book_id}
+            payload = {'id': book_id, 'stock_delta': -1}
             update_response = requests.post(update_url, json=payload)
-            if update_response.status_code == 200:
+            update_response_data = update_response.json()
+            if update_response_data['stock_updated']:
                 app.logconsole.info("Purchase successful and updated the stocks successfully")
-            return(update_response.json())
+                return(jsonify({"buy": True}))
+            else:
+                app.logconsole.info("Purchase unsuccessful, catalog service unabled to update details")
+                return(jsonify({"buy": False, "error": "Unexpected error"}))
         else:
            return(jsonify({"buy": False, "error": "Product no longer in stock"}))  
     except ConnectionError as err:
