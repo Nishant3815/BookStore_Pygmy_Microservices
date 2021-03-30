@@ -61,4 +61,4 @@ if __name__ == "__main__":
 
    # Testing Buy Endpoint
    test_buy_endpoint('4', '{"buy":true}', 5)
-   test_buy_endpoint('5', '{"buy":false,"error":"Product doesn\'t exist"}', 5)
+   test_buy_endpoint('5', '{"buy":false,"error":"Product doesn\'t exist"}', 6)
