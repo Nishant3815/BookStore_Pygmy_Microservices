@@ -66,13 +66,12 @@ sqlite> select * from books;
 2|RPCs for Dummies|Distributed Systems|200|200
 3|Xen and the Art of Surviving Graduate School|Graduate School|200|200
 4|Cooking for the Impatient Graduate Student|Graduate School|200|200
-
 ```
 
 5. Checking the db queries done by catalog service
 These queries can be used to reconstruct the sqlite db if needed
 ```
-less catalog.log
+less logs/catalog.log
 ```
 
 ### :man_technologist: Maintainers
