@@ -19,14 +19,14 @@ def purchase_product(book_id):
 
     app.logconsole.info("Got request to buy product with id: " + str(book_id))
     try:
-        query_response = requests.get("http://catalog:8080/query?id="+str(book_id))
+        query_response = requests.get(app.config['CATALOG_SERVICE_ENDPOINT'] + "/query?id=" + str(book_id))
         data = query_response.json()
 
         if len(data) == 0:
             return(jsonify({"buy": False, "error": "Product doesn't exist"}))
 
         if (data[0]['stock'] > 0):
-            update_url = 'http://catalog:8080/update'
+            update_url = app.config['CATALOG_SERVICE_ENDPOINT'] + '/update'
             payload = {'id': book_id, 'stock_delta': -1}
             update_response = requests.post(update_url, json=payload)
             update_response_data = update_response.json()

@@ -9,6 +9,9 @@ services:
     depends_on:
       - catalog
       - order
+    environment:
+      - CATALOG_SERVICE_ENDPOINT=http://catalog:8080
+      - ORDER_SERVICE_ENDPOINT=http://order:8080
   catalog:
     build: ./catalog
     container_name: catalog
@@ -30,6 +33,7 @@ services:
     ports:
       - 8002:8080
     environment:
+      - CATALOG_SERVICE_ENDPOINT=http://catalog:8080
       - DB_QUERY_LOG=order.log
     volumes:
       - ./logs:/logs

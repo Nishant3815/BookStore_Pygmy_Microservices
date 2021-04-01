@@ -12,7 +12,7 @@ def backend_healthcheck() -> bool:
     """
 
     try:
-        result = requests.get("http://catalog:8080/health")
+        result = requests.get(app.config['CATALOG_SERVICE_ENDPOINT'] + "/health")
         app.logconsole.info(result)
         return True
     except ConnectionError as err:
@@ -35,7 +35,7 @@ def search_topic(topic):
 
     app.logconsole.info("Searching for topic " + topic)
     try:
-        response = requests.get("http://catalog:8080/query?topic="+str(topic))
+        response = requests.get(app.config['CATALOG_SERVICE_ENDPOINT'] + "/query?topic=" + str(topic))
         return str(response.json())
     except ConnectionError as err:
         app.logconsole.error(err)
@@ -57,7 +57,7 @@ def search_product(book_id):
 
     app.logconsole.info("Searching for product with productId " + str(book_id))
     try:
-        response = requests.get("http://catalog:8080/query?id="+str(book_id))
+        response = requests.get(app.config['CATALOG_SERVICE_ENDPOINT'] + "/query?id=" + str(book_id))
         return str(response.json())
     except ConnectionError as err:
         app.logconsole.error(err)
@@ -78,7 +78,7 @@ def buy_product(book_id):
     """
 
     app.logconsole.info("Buying product with productId " + str(book_id))
-    update_url = 'http://order:8080/purchase'
+    update_url = app.config['ORDER_SERVICE_ENDPOINT'] + '/purchase'
     payload = {'id': book_id}
     try:
         response = requests.post(update_url, json=payload)
