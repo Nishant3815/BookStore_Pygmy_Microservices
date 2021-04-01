@@ -1,9 +1,11 @@
 import requests
 
+FRONTEND_ENDPOINT='http://localhost:8080'
+
 def test_search_endpoint(test_input, test_output, test_case_num):
    print("Searching for topic: " + test_input)
    try:
-      response = requests.get('http://localhost:8000/search?topic=' + str(test_input))
+      response = requests.get(FRONTEND_ENDPOINT + '/search?topic=' + str(test_input))
       print("Response: " + response.text)
       if response.text == str(test_output):
          print("Response matches expected output")
@@ -15,11 +17,11 @@ def test_search_endpoint(test_input, test_output, test_case_num):
       print("Request failed with error: " + err)
    print("Test case: " +str(test_case_num) + " ....... Failed\n")
    return
-      
+
 def test_lookup_endpoint(test_input, test_output, test_case_num):
    print("Performing lookup for book with bookId: " + test_input)
    try:
-      response = requests.get('http://localhost:8000/lookup?id=' + str(test_input))
+      response = requests.get(FRONTEND_ENDPOINT + '/lookup?id=' + str(test_input))
       print("Response: " + response.text)
       if response.text == str(test_output):
          print("Response matches expected output")
@@ -35,7 +37,7 @@ def test_lookup_endpoint(test_input, test_output, test_case_num):
 def test_buy_endpoint(test_input, test_output, test_case_num):
    print("Buying book with bookId: " + test_input)
    try:
-      response = requests.post('http://localhost:8000/buy', json = {'id': test_input})
+      response = requests.post(FRONTEND_ENDPOINT + '/buy', json = {'id': test_input})
       print("Response: " + response.text.strip())
       if response.text.strip() == str(test_output):
          print("Response matches expected output")
@@ -52,7 +54,7 @@ if __name__ == "__main__":
    print("Starting Client Testing Script\n")
 
    # Testing Search Endpoint
-   test_search_endpoint('Graduate School', [{'id': 3, 'name': 'Xen and the Art of Surviving Graduate School'}, {'id': 4, 'name': 'Cooking for the Impatient Graduate Student'}], 1) 
+   test_search_endpoint('Graduate School', [{'id': 3, 'name': 'Xen and the Art of Surviving Graduate School'}, {'id': 4, 'name': 'Cooking for the Impatient Graduate Student'}], 1)
    test_search_endpoint('Umass', [], 2)
 
    # Testing Lookup Endpoint

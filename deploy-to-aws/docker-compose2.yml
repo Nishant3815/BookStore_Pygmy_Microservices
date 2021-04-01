@@ -1,0 +1,12 @@
+version: '3.2'
+services:
+  order:
+    build: ./order
+    container_name: order
+    restart: always
+    environment:
+      - DB_QUERY_LOG=order.log
+      - CATALOG_SERVICE_ENDPOINT=http://172.31.39.95:8080
+    volumes:
+      - ./logs:/logs
+    network_mode: "host"

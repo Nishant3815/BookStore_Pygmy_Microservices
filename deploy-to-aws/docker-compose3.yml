@@ -1,40 +1,18 @@
 version: '3.2'
 services:
-  frontend:
-    build: ./frontend
-    container_name: frontend
-    restart: always
-    ports:
-      - 8000:8080
-    depends_on:
-      - catalog
-      - order
   catalog:
     build: ./catalog
     container_name: catalog
     restart: always
-    ports:
-      - 8001:8080
     environment:
       - SQLITE_DB_NAME=bookstore.db
       - DB_QUERY_LOG=catalog.log
     volumes:
       - ./sqlite:/db
       - ./logs:/logs
+    network_mode: "host"
     depends_on:
       - sqlite
-  order:
-    build: ./order
-    container_name: order
-    restart: always
-    ports:
-      - 8002:8080
-    environment:
-      - DB_QUERY_LOG=order.log
-    volumes:
-      - ./logs:/logs
-    depends_on:
-      - catalog
   sqlite:
     build: ./sqlite
     container_name: sqlite

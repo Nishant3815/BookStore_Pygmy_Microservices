@@ -1,0 +1,10 @@
+version: '3.2'
+services:
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    restart: always
+    environment:
+      - CATALOG_SERVICE_ENDPOINT=http://172.31.39.95:8080
+      - ORDER_SERVICE_ENDPOINT=http://172.31.55.168:8080
+    network_mode: "host"

@@ -23,18 +23,25 @@ echo -e "Shipping and running the installer script to all provided ec2 instances
 for (( i=1; i<${argumentLength}; i++ ));
 do
     echo "Started with ${argumentList[$i]}"
-    echo "Scping install_dependencies.tar.gz to the server"
-    scp -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=ERROR -i $awsPrivateKey install_dependencies.tar.gz ubuntu@${argumentList[$i]}:~/
+    echo "Scping setup.tar.gz to the server"
+    scp -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=ERROR -i $awsPrivateKey setup.tar.gz ubuntu@${argumentList[$i]}:~/
     
-    echo "Untarring install_dependencies.tar.gz on the server"
-    ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=ERROR -i $awsPrivateKey ubuntu@${argumentList[$i]} 'tar -xzf install_dependencies.tar.gz'
-    
-    echo "Running install_dependencies.sh remotely"
-    ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=ERROR -i $awsPrivateKey ubuntu@${argumentList[$i]} './install_dependencies.sh 2> install.log'
+    echo "Untarring setup.tar.gz on the server"
+    ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=ERROR -i $awsPrivateKey ubuntu@${argumentList[$i]} 'tar -xzf setup.tar.gz'
 
-    echo "Shipping docker-compose.yml to server"
-    scp -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=ERROR -i $awsPrivateKey docker-compose.yml ubuntu@${argumentList[$i]}:~/BookStore_Pygmy_Microservices/
+    echo "Setting up the dependencies"
+    ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=ERROR -i $awsPrivateKey ubuntu@${argumentList[$i]} './setup.sh 2> setup.log'
+
+    if [[ $i -ne 4 ]]; 
+    then
+        echo "Shipping docker-compose.yml to the server"
+        scp -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=ERROR -i $awsPrivateKey docker-compose$i.yml ubuntu@${argumentList[$i]}:~/BookStore_Pygmy_Microservices/docker-compose.yml
+
+        echo "Building and Starting the docker containers"
+        ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=ERROR -i $awsPrivateKey ubuntu@${argumentList[$i]} './start_containers.sh'
+    fi
+
     echo ""
 done
 
-echo "All instances setup, you can now login to these servers and start the peers"
+echo "All instances setup, containers are running. You can now login to the 4th server and run tests from there"
