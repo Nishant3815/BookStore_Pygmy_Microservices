@@ -74,6 +74,14 @@ These queries can be used to reconstruct the sqlite db if needed
 less logs/catalog.log
 ```
 
+6. Running tests manually
+Below curl calls can be used to test the application functionality manually
+```
+Search: curl "http://localhost:8000/search?topic=Graduate%20School"
+Lookup: curl "http://localhost:8000/lookup?id=4"
+Buy: curl -X POST -H 'Content-Type: application/json' "http://localhost:8000/buy" -d '{"id": 4}'
+```
+
 ### :man_technologist: Maintainers
 - [Noel Varghese](https://github.com/envy7)
 - [Nishant Raj](https://github.com/Nishant3815)
