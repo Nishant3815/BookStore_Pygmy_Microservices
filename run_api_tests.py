@@ -1,6 +1,5 @@
 import requests
-
-FRONTEND_ENDPOINT='http://localhost:8080'
+import sys, getopt
 
 def test_search_endpoint(test_input, test_output, test_case_num):
    print("Searching for topic: " + test_input)
@@ -51,6 +50,25 @@ def test_buy_endpoint(test_input, test_output, test_case_num):
    return
 
 if __name__ == "__main__":
+
+   host = "localhost"
+   port = "8000"
+   
+   # Parse arguments to set the frontend endpoint
+   argv = sys.argv[1:]
+   try:
+      opts, args = getopt.getopt(argv, "h:p:", ["host=", "port="])
+   except:
+      print("python3 run_api_tests.py -h <host> -p <port>")
+      sys.exit(2)
+   for opt, arg in opts:
+      if opt in ("-h", "--host"):
+         host = arg
+      elif opt in ("-p", "--port"):
+         port = arg
+
+   FRONTEND_ENDPOINT = "http://" + host + ":" + port
+
    print("Starting Client Testing Script\n")
 
    # Testing Search Endpoint
