@@ -36,6 +36,7 @@ def search_topic(topic):
     app.logconsole.info("Searching for topic " + topic)
     try:
         response = requests.get(app.config['CATALOG_SERVICE_ENDPOINT'] + "/query?topic=" + str(topic))
+        app.logconsole.info("Got response: " + response.text.strip())
         return str(response.json())
     except ConnectionError as err:
         app.logconsole.error(err)
@@ -58,6 +59,7 @@ def search_product(book_id):
     app.logconsole.info("Searching for product with productId " + str(book_id))
     try:
         response = requests.get(app.config['CATALOG_SERVICE_ENDPOINT'] + "/query?id=" + str(book_id))
+        app.logconsole.info("Got response: " + response.text.strip())
         return str(response.json())
     except ConnectionError as err:
         app.logconsole.error(err)
@@ -82,6 +84,10 @@ def buy_product(book_id):
     payload = {'id': book_id}
     try:
         response = requests.post(update_url, json=payload)
+        if response.json()["buy"]:
+            app.logconsole.info("Bought book with bookId: " + str(book_id))
+        else:
+            app.logconsole.info("Unable to buy book with bookId: " + str(book_id))
         return response.json()
     except ConnectionError as err:
         app.logconsole.error(err)
