@@ -1,7 +1,7 @@
 from requests.models import Response
 from app import app
 from flask import jsonify
-import requests
+import requests, datetime
 
 def purchase_product(book_id):
     """
@@ -19,6 +19,7 @@ def purchase_product(book_id):
 
     app.logconsole.info("Got request to buy product with id: " + str(book_id))
     try:
+        start_time = datetime.datetime.now()
         query_response = requests.get(app.config['CATALOG_SERVICE_ENDPOINT'] + "/query?id=" + str(book_id))
         data = query_response.json()
 
@@ -30,8 +31,12 @@ def purchase_product(book_id):
             payload = {'id': book_id, 'stock_delta': -1}
             update_response = requests.post(update_url, json=payload)
             update_response_data = update_response.json()
+
             if update_response_data['stock_updated']:
                 app.logconsole.info("Purchase successful and updated the stocks successfully")
+                end_time = datetime.datetime.now()
+                request_latency = ((end_time - start_time).microseconds / 100000)
+                app.logconsole.info("Time taken for buy: " + str(request_latency))
                 return(jsonify({"buy": True}))
             else:
                 app.logconsole.info("Purchase unsuccessful, catalog service unabled to update details")
