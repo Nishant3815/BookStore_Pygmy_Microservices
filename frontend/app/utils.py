@@ -1,5 +1,5 @@
 from app import app
-import requests, datetime
+import requests
 
 def backend_healthcheck() -> bool:
     """
@@ -35,12 +35,8 @@ def search_topic(topic):
 
     app.logconsole.info("Searching for topic " + topic)
     try:
-        start_time = datetime.datetime.now()
         response = requests.get(app.config['CATALOG_SERVICE_ENDPOINT'] + "/query?topic=" + str(topic))
         app.logconsole.info("Got response: " + response.text.strip())
-        end_time = datetime.datetime.now()
-        request_latency = ((end_time - start_time).microseconds / 100000)
-        app.logconsole.info("Time taken for search: " + str(request_latency))
         return str(response.json())
     except ConnectionError as err:
         app.logconsole.error(err)
@@ -62,12 +58,8 @@ def search_product(book_id):
 
     app.logconsole.info("Searching for product with productId " + str(book_id))
     try:
-        start_time = datetime.datetime.now()
         response = requests.get(app.config['CATALOG_SERVICE_ENDPOINT'] + "/query?id=" + str(book_id))
         app.logconsole.info("Got response: " + response.text.strip())
-        end_time = datetime.datetime.now()
-        request_latency = ((end_time - start_time).microseconds / 100000)
-        app.logconsole.info("Time taken for lookup: " + str(request_latency))
         return str(response.json())
     except ConnectionError as err:
         app.logconsole.error(err)
@@ -91,13 +83,9 @@ def buy_product(book_id):
     update_url = app.config['ORDER_SERVICE_ENDPOINT'] + '/purchase'
     payload = {'id': book_id}
     try:
-        start_time = datetime.datetime.now()
         response = requests.post(update_url, json=payload)
         if response.json()["buy"]:
             app.logconsole.info("Bought book with bookId: " + str(book_id))
-            end_time = datetime.datetime.now()
-            request_latency = ((end_time - start_time).microseconds / 100000)
-            app.logconsole.info("Time taken for buy: " + str(request_latency))
         else:
             app.logconsole.info("Unable to buy book with bookId: " + str(book_id))
         return response.json()

@@ -36,6 +36,23 @@ def measure_lookup_latency(test_input, test_output):
     
     return (request_latency / 100000)
 
+def measure_buy_latency(test_input, test_output):
+    request_latency = 0
+    
+    for i in range(1000):
+        try:
+            start_time = datetime.datetime.now()
+            response = requests.post(FRONTEND_ENDPOINT + '/buy', json = {'id': test_input})
+            end_time = datetime.datetime.now()
+            if response.text.strip() == str(test_output):
+                request_latency += (end_time - start_time).microseconds
+            else:
+                print("Response didn't match expected output")
+        except ConnectionError as err:
+            print("Request failed with error: " + err)
+
+    return (request_latency / 100000)
+
 if __name__ == "__main__":
 
     host = "localhost"
@@ -65,3 +82,7 @@ if __name__ == "__main__":
     # Testing Lookup Endpoint
     lookup_latency = measure_lookup_latency('1', [{'cost': 200, 'id': 1, 'name': 'How to get a good grade in 677 in 20 minutes a day', 'stock': 200, 'topic': 'Distributed Systems'}])
     print("Time taken for 1000 sequential lookup requests: " + str(lookup_latency) + "s")
+
+    # Testing Buy Endpoint
+    buy_latency = measure_buy_latency('4', '{"buy":true}')
+    print("Time taken for 1000 sequential buy requests: " + str(buy_latency) + "s")

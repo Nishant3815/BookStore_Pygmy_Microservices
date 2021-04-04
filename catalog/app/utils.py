@@ -1,6 +1,5 @@
 from app import app
 from flask import g, jsonify
-import datetime
 
 
 def db_healthcheck() -> bool:
@@ -40,25 +39,16 @@ def query_product_details(query_key, query_type):
             description: All details regarding the available product/s
     """
 
-    start_time = datetime.datetime.now()
     if query_type == "search":
         app.logconsole.info("Searching for products having topic: " + str(query_key))
         products = query_db('select id,name from books where topic="' + str(query_key) + '"')
         app.logfile.info('select id,name from books where topic=' + str(query_key))
-
-        end_time = datetime.datetime.now()
-        request_latency = ((end_time - start_time).microseconds / 100000)
-        app.logconsole.info("Time taken for search: " + str(request_latency))
         return jsonify(products)
 
     elif query_type == "lookup":
         app.logconsole.info("Looking up product having id: " + str(query_key))
         product = query_db('select * from books where id=' + str(query_key))
         app.logfile.info('select * from books where id=' + str(query_key))
-
-        end_time = datetime.datetime.now()
-        request_latency = ((end_time - start_time).microseconds / 100000)
-        app.logconsole.info("Time taken for lookup: " + str(request_latency))
         return jsonify(product)
 
 def update_product_details(book_id, stock_delta, updated_cost):
@@ -75,7 +65,6 @@ def update_product_details(book_id, stock_delta, updated_cost):
             description: Status of the operation
     """
 
-    start_time = datetime.datetime.now()
     response = {}
 
     if stock_delta and stock_delta != 0:
@@ -91,10 +80,7 @@ def update_product_details(book_id, stock_delta, updated_cost):
         update_cost_details = update_db('update books set cost='+str(updated_cost)+' where id='+str(book_id))
         app.logfile.info('update books set stock='+str(updated_cost)+' where id='+str(book_id))
         response['cost_updated'] = update_cost_details
-
-    end_time = datetime.datetime.now()
-    request_latency = ((end_time - start_time).microseconds / 100000)
-    app.logconsole.info("Time taken for buy: " + str(request_latency))
+        
     return(jsonify(response))
 
 def query_db(query, args=(), one=False):
