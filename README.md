@@ -98,7 +98,7 @@ cd deploy-to-aws
 2. To deploy the code to ec2 instances we need to change the docker-compose files and post that run the command shown
 
 So we need 4 ec2 machines each hosting frontend, order, catalog and client in this order.
-Before executing the above script edit docker-compose1.yml and docker-compose2.yml. Change the CATALOG_SERVICE_ENDPOINT and ORDER_SERVICE_ENDPOINT to the corresponding pvt ips of catalog-service-ec2-public-dns & order-service-ec2-public-dns respectively. This is how the services will know how to reach themselves internally within AWS. i.e
+Before executing the below script edit docker-compose1.yml and docker-compose2.yml. Change the CATALOG_SERVICE_ENDPOINT and ORDER_SERVICE_ENDPOINT to the corresponding pvt ips of catalog-service-ec2-public-dns & order-service-ec2-public-dns respectively. This is how the services will know how to reach themselves internally within AWS. i.e
 CATALOG_SERVICE_ENDPOINT=http://<catalog-ec2-instance-pvt-ip>:8080
 ORDER_SERVICE_ENDPOINT=http://<order-ec2-instance-pvt-ip>:8080
 ```
