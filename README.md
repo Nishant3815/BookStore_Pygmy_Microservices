@@ -82,6 +82,46 @@ Lookup: curl "http://localhost:8000/lookup?id=4"
 Buy: curl -X POST -H 'Content-Type: application/json' "http://localhost:8000/buy" -d '{"id": 4}'
 ```
 
+## :cloud: Deploying and running on AWS
+
+### Pre-requisites
+1. Make sure the instances running in AWS are running the latest version of Ubuntu OS. It might work even on previous versions but it hasn't been tested. The script has been tested for the following AMI ID(`ami-0b4eac045bf0ceb49`)
+2. Ensure you have the private key through which you ssh to the ec2 instances present locally and have already ensured that ssh to the instances is working using this key. I.e `ssh -i <key> ubuntu@<ec2-public-dns-name>` is working
+3. Have the private ips of your ec2 instances ready, as you will need to add these ips to the docker-compose files. You can find this ip by doing the command `ip a` and checking which ip is binded on eth0 interface. It should also be present in the aws console.
+
+### Steps
+1. cd to deploy-to-aws directory inside project directory
+```
+cd deploy-to-aws
+```
+
+2. To deploy the code to ec2 instances we need to change the docker-compose files and post that run the command shown
+
+So we need 4 ec2 machines each hosting frontend, order, catalog and client in this order.
+Before executing the above script edit docker-compose1.yml and docker-compose2.yml. Change the CATALOG_SERVICE_ENDPOINT and ORDER_SERVICE_ENDPOINT to the corresponding pvt ips of catalog-service-ec2-public-dns & order-service-ec2-public-dns respectively. This is how the services will know how to reach themselves internally within AWS. i.e
+CATALOG_SERVICE_ENDPOINT=http://<catalog-ec2-instance-pvt-ip>:8080
+ORDER_SERVICE_ENDPOINT=http://<order-ec2-instance-pvt-ip>:8080
+```
+./deploy_code.sh <path-to-private-key> <frontend-service-ec2-public-dns> <order-service-ec2-public-dns> <catalog-service-ec2-public-dns> <client-testing-ec2-public-dns>
+```
+
+Once the ips are changed, the deploy_code.sh script can be run as shown in the example. The first parameter to the script is the path to the private key which you use to ssh to the ec2 instances.
+
+3. Check if services are running
+SSH to the first 3 ec2 servers and check if the docker-containers are running properly, using the below command.
+```
+docker ps
+```
+
+4. Test the endpoints from the 4th ec2 instance post doing ssh to it
+```
+cd BookStore_Pygmy_Microservices
+python3 run_api_tests.py -h <frontend-ec2-instance-pvt-ip> -p 8080
+```
+
+5. Further testing can be done by manually doing curl calls as highlighted in the running and checking testcases section
+Ensure to replace localhost with ip and port 8000 with 8080
+
 ### :man_technologist: Maintainers
 - [Noel Varghese](https://github.com/envy7)
 - [Nishant Raj](https://github.com/Nishant3815)
