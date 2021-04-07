@@ -80,6 +80,9 @@ Below curl calls can be used to test the application functionality manually
 Search: curl "http://localhost:8000/search?topic=Graduate%20School"
 Lookup: curl "http://localhost:8000/lookup?id=4"
 Buy: curl -X POST -H 'Content-Type: application/json' "http://localhost:8000/buy" -d '{"id": 4}'
+Update stock: curl -X POST -H 'Content-Type: application/json' "http://localhost:8001/update" -d '{"id": 1, "stock_delta": -1}'
+Update price: curl -X POST -H 'Content-Type: application/json' "http://localhost:8001/update" -d '{"id": 1, "cost": 400}'
+Update both stock and price: curl -X POST -H 'Content-Type: application/json' "http://localhost:8001/update" -d '{"id": 1, "stock_delta": -1, "cost": 400}' 
 ```
 
 ## :cloud: Deploying and running on AWS
